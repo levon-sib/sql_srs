@@ -1,29 +1,65 @@
 import streamlit as st
 import pandas as pd
 import duckdb
+import io
 
 st.write("""
 # SQL SRS
 Space Repetition System SQL practice
 """)
 
-with st.sidebar:
-    option = st.selectbox(
-        "What would you like to review?",
-        ["Joins", "Groups by", "Window functions"],
-        index=None,
-        placeholder="Select a theme..."
-    )
+csv = '''
+beverage,price
+orange juice,2.5
+expresso,2
+tea,3
+'''
 
-    st.write("You selected: ", option)
+beverages = pd.read_csv(io.StringIO(csv))
 
-data = {"a": [1, 2, 3], "b": [4, 5, 6]}
-df = pd.DataFrame(data)
+csv2 = '''
+food_item,food_price
+cookie,2.5
+chocolatine,2
+muffin, 3
+'''
 
-tab1, tab2 = st.tabs(["First tab", "Second tab"])
+food_items = pd.read_csv(io.StringIO(csv2))
 
-with tab1:
-    sql_query = st.text_area(label = "Entrez votre input")
-    result = duckdb.query(sql_query).df()
-    st.write(f"Vous avez entre la query suivante : {sql_query}")
-    st.dataframe(result)
+answer = """
+select *
+from beverages
+cross join food_items
+"""
+
+solution = duckdb.sql(answer).df()
+
+st.header("Enter your code:")
+query = st.text_area(label = "Votre code SQL ici", value = "select * from beverages", key = "user_input")
+
+result = duckdb.query(query).df()
+st.write(f"Resultat de votre query:")
+st.dataframe(result)
+
+# with st.sidebar:
+#     option = st.selectbox(
+#         "What would you like to review?",
+#         ["Joins", "Groups by", "Window functions"],
+#         index=None,
+#         placeholder="Select a theme..."
+#     )
+#
+#     st.write("You selected: ", option)
+
+tab2, tab3 = st.tabs(["Tables", "Solution"])
+
+with tab2:
+    st.write("table : beverages")
+    st.dataframe(beverages)
+    st.write("table : food items")
+    st.dataframe(food_items)
+    st.write("expected : ")
+    st.dataframe(solution)
+
+with tab3:
+    st.write(answer)
