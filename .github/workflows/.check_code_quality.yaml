@@ -1,0 +1,26 @@
+name: check_code_quality
+
+on: pull_request
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: ⏳ Install pip and black libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install black
+
+      - name: 🖥️ Run Black to test Python code formatting
+        run: |
+          black --check --verbose .
