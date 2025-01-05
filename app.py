@@ -62,7 +62,9 @@ if query:
 
 with st.sidebar:
     option = st.selectbox(
-        "What would you like to review?", ["Joins", "Groups by", "Window functions"], index=None,
+        "What would you like to review?",
+        ["Joins", "Groups by", "Window functions"],
+        index=None,
         placeholder="Select a theme...",
     )
 
