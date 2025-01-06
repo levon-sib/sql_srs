@@ -1,5 +1,6 @@
 import duckdb
 import streamlit as st
+import ast
 
 con = duckdb.connect(database="data/ex_sql_tables.duckdb", read_only=False)
 
@@ -10,33 +11,25 @@ Space Repetition System SQL practice
 """
 )
 
-ANSWER_STR = """
-select *
-from beverages
-cross join food_items
-"""
-
 with st.sidebar:
     theme = st.selectbox(
         "What would you like to review?",
-        ["cross_joins", "Groups by", "window_functions"],
-        index=None,
+        ["cross_joins", "group_by", "window_functions"],
+        index=0,
         placeholder="Select a theme...",
     )
 
     st.write("You selected: ", theme)
-    exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'").df()
-    st.write(exercise)
+    exo = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'").df()
+    st.write(exo)
 
 st.header("Enter your code:")
-query = st.text_area(
-    label="Votre code SQL ici", value="select * from beverages", key="user_input"
-)
+query = st.text_area(label="Votre code SQL ici", key="user_input")
 
-# if query:
-#     result = duckdb.query(query).df()
-#     st.write("Resultat de votre query:")
-#     st.dataframe(result)
+if query:
+    result = con.execute(query).df()
+    st.write("Resultat de votre query:")
+    st.dataframe(result)
 #
 #     try:
 #         result = result[solution_df.columns]
@@ -50,18 +43,19 @@ query = st.text_area(
 #         st.write(
 #             f"Your result has {n_lines_difference} lines difference with the solution"
 #         )
-#
-#
-#
-# tab2, tab3 = st.tabs(["Tables", "Solution"])
-#
-# with tab2:
-#     st.write("table : beverages")
-#     st.dataframe(beverages)
-#     st.write("table : food items")
-#     st.dataframe(food_items)
-#     st.write("expected : ")
-#     st.dataframe(solution_df)
-#
-# with tab3:
-#     st.write(ANSWER_STR)
+
+tab2, tab3 = st.tabs(["Tables", "Solution"])
+
+with tab2:
+    exo_tables = ast.literal_eval(exo.loc[0, "tables"])
+    for table in exo_tables:
+        print(table)
+        st.write(f"table : {table}")
+        df_table = con.execute(f"SELECT * FROM {table}").df()
+
+
+with tab3:
+    exercise_name = exo.loc[0, "exercise_name"]
+    with open(f"answers/{exercise_name}.sql", "r") as f:
+        answer = f.read()
+    st.write(answer)
