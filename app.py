@@ -14,7 +14,7 @@ Space Repetition System SQL practice
 with st.sidebar:
     theme = st.selectbox(
         "What would you like to review?",
-        ["cross_joins", "group_by", "window_functions"],
+        ["cross_joins", "group_by", "window_function"],
         index=0,
         placeholder="Select a theme :)",
     )
@@ -53,7 +53,7 @@ if query:
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
 with tab2:
-    exo_tables = ast.literal_eval(exo.loc[0, "tables"])
+    exo_tables = exo.loc[0, "tables"]
     for table in exo_tables:
         print(table)
         st.write(f"table : {table}")
